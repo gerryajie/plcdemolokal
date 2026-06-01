@@ -1,0 +1,83 @@
+{
+  "appId": "com.monitorplc.app",
+  "productName": "MonitorPLC",
+  "directories": {
+    "output": "release",
+    "buildResources": "public"
+  },
+  "files": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "public/electron.cjs",
+    "public/preload.cjs",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "../BE",
+      "to": "BE",
+      "filter": [
+        "src/**/*",
+        "package.json",
+        "package-lock.json",
+        ".env",
+        ".env.example"
+      ]
+    },
+    {
+      "from": "../BE/node_modules",
+      "to": "BE/node_modules",
+      "filter": [
+        "**/*"
+      ]
+    },
+    {
+      "from": "build-runtime",
+      "to": "runtime",
+      "filter": [
+        "**/*"
+      ]
+    }
+  ],
+  "win": {
+    "signAndEditExecutable": false,
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "MonitorPLC"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "deb",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "category": "Utility"
+  }
+}

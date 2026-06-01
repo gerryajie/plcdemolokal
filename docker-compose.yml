@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: plcdb
+      MYSQL_USER: plcuser
+      MYSQL_PASSWORD: plcpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: .
+      dockerfile: BE/Dockerfile
+    env_file:
+      - BE/.env.production
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - ./BE/public:/app/public
+
+  frontend:
+    build:
+      context: .
+      dockerfile: FE/Dockerfile
+    ports:
+      - "3000:80"
+
+volumes:
+  db-data:
