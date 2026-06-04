@@ -1,17 +1,15 @@
-const sequelize =
-  require("../config/database");
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-const { Sequelize, DataTypes } =
-  require("sequelize");
-
-const db = {};
-
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-
-db.PlcLog = require("./PlcLog")(
-  sequelize,
-  DataTypes
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    logging: false,
+  }
 );
 
-module.exports = db;
+module.exports = sequelize;
