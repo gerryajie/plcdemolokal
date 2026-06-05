@@ -1,0 +1,9 @@
+{
+  "name": "plc-local-workspace",
+  "private": true,
+  "scripts": {
+    "start:be": "npm --prefix BE run dev",
+    "start:fe": "npm --prefix FE run dev",
+    "start": "npx concurrently \"npm --prefix BE run dev\" \"npm --prefix FE run dev\""
+  }
+}
