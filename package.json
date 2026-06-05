@@ -4,6 +4,9 @@
   "scripts": {
     "start:be": "npm --prefix BE run dev",
     "start:fe": "npm --prefix FE run dev",
-    "start": "npx concurrently \"npm --prefix BE run dev\" \"npm --prefix FE run dev\""
+    "start": "npx concurrently \"npm --prefix BE run dev\" \"npm --prefix FE run dev\"",
+    "start:be:prod": "npm --prefix BE run start",
+    "start:fe:prod": "npm --prefix FE run prod",
+    "start:prod": "npx concurrently \"npm --prefix BE run start\" \"npm --prefix FE run prod\""
   }
 }

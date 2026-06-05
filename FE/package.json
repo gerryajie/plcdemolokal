@@ -8,9 +8,9 @@
   "main": "public/electron.cjs",
   "homepage": "./",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
-    "prod": "npm run build && npx serve -s dist -l 3000",
+    "prod": "npm run build && npx concurrently \"npx serve -s dist -l 3000\" \"npx wait-on http://localhost:3000 && powershell.exe -NoProfile -Command Start-Process http://localhost:3000\"",
     "electron-dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "electron-build": "electron-builder --config electron-builder.json",
     "electron-build:win": "electron-builder --config electron-builder.json --win",

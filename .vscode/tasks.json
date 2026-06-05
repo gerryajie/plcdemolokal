@@ -33,6 +33,39 @@
       "label": "Start FE + BE",
       "dependsOn": ["Start Backend", "Start Frontend"],
       "dependsOrder": "parallel"
+    },
+    {
+      "label": "Start Backend Prod",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start"],
+      "options": {
+        "cwd": "${workspaceFolder}/BE"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Frontend Prod",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "prod"],
+      "options": {
+        "cwd": "${workspaceFolder}/FE"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start FE + BE Prod",
+      "dependsOn": ["Start Backend Prod", "Start Frontend Prod"],
+      "dependsOrder": "parallel"
     }
   ]
 }
