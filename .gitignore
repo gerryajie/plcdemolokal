@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.pfx
+*.p12
+*credentials*
+*secrets*
+*token*
+
+# Build outputs and installers
+dist/
+dist-ssr/
+release/
+build/
+build-runtime/
+INSTALAN_DESKTOP_*/
+MENTAHAN_DESKTOP_*/
+*.exe
+*.msi
+*.zip
+*.7z
+*.rar
+*.asar
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/

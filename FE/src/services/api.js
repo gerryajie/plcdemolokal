@@ -23,7 +23,10 @@ const getApiBaseUrl = async () => {
     }
   }
 
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  const envUrl =
+    import.meta.env.VITE_API_BASE_URL ||
+    (isElectron() ? "http://127.0.0.1:5000" : undefined);
+
   if (!envUrl) {
     throw new Error(
       "VITE_API_BASE_URL is not configured"

@@ -63,6 +63,9 @@
     "createStartMenuShortcut": true,
     "shortcutName": "MonitorPLC"
   },
+  "portable": {
+    "artifactName": "MonitorPLC-${version}-portable.${ext}"
+  },
   "linux": {
     "target": [
       {
@@ -78,6 +81,16 @@
         ]
       }
     ],
-    "category": "Utility"
+    "category": "Utility",
+    "maintainer": "SCMT",
+    "description": "Desktop monitoring application for Siemens S7 PLC"
+  },
+  "deb": {
+    "depends": [
+      "ca-certificates"
+    ]
+  },
+  "appImage": {
+    "artifactName": "MonitorPLC-${version}.${ext}"
   }
 }

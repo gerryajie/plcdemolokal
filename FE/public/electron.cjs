@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
@@ -13,6 +13,11 @@ const BACKEND_HOST = "http://127.0.0.1";
 const BACKEND_URL = `${BACKEND_HOST}:${BACKEND_PORT}`;
 const isDev = !app.isPackaged;
 let logFile;
+
+// Platform detection
+const isWindows = process.platform === "win32";
+const isLinux = process.platform === "linux";
+const isMac = process.platform === "darwin";
 
 function getLogFile() {
   if (!logFile) {
@@ -52,6 +57,17 @@ function writeLog(...args) {
   );
 
   console.log(...args);
+}
+
+function getAppIcon() {
+  const iconPath = path.join(__dirname, "icon.png");
+  
+  if (fs.existsSync(iconPath)) {
+    return iconPath;
+  }
+  
+  // Fallback ke icon di dalam app
+  return undefined;
 }
 
 function waitForPort(port, host = "127.0.0.1") {
@@ -202,7 +218,7 @@ async function startBackendServer() {
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const windowOptions = {
     width: 1366,
     height: 768,
     minWidth: 1024,
@@ -212,7 +228,15 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-  });
+  };
+
+  // Add icon for Windows dan Linux
+  const appIcon = getAppIcon();
+  if (appIcon) {
+    windowOptions.icon = appIcon;
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
 
   const startUrl = isDev
     ? "http://localhost:5173"
@@ -229,6 +253,42 @@ function createWindow() {
   });
 }
 
+function createApplicationMenu() {
+  const template = [
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Exit",
+          accelerator: "CmdOrCtrl+Q",
+          click: () => {
+            app.quit();
+          },
+        },
+      ],
+    },
+    {
+      label: "Help",
+      submenu: [
+        {
+          label: "About MonitorPLC",
+          click: () => {
+            dialog.showMessageBox(mainWindow, {
+              type: "info",
+              title: "About MonitorPLC",
+              message: "MonitorPLC Desktop",
+              detail: `Version: ${app.getVersion()}\nMonitoring application for Siemens S7 PLC`,
+            });
+          },
+        },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 function stopBackendServer() {
   if (!backendProcess) {
     return;
@@ -242,8 +302,11 @@ ipcMain.handle("get-backend-url", () => BACKEND_URL);
 
 app.whenReady().then(async () => {
   try {
+    writeLog(`Starting MonitorPLC on ${process.platform}`);
     await startBackendServer();
     createWindow();
+    createApplicationMenu();
+    writeLog("Application started successfully");
   } catch (error) {
     writeLog("Failed to start app:", error);
 
@@ -252,7 +315,7 @@ app.whenReady().then(async () => {
       [
         error.message,
         "",
-        "Cek log:",
+        "Cek log file untuk detail lebih lanjut:",
         getLogFile(),
       ].join("\n")
     );
@@ -260,6 +323,21 @@ app.whenReady().then(async () => {
     app.quit();
   }
 });
+
+// Handle Linux/macOS specific signals
+if (isLinux || isMac) {
+  process.on("SIGTERM", () => {
+    writeLog("SIGTERM signal received: closing the application");
+    stopBackendServer();
+    app.quit();
+  });
+
+  process.on("SIGINT", () => {
+    writeLog("SIGINT signal received: closing the application");
+    stopBackendServer();
+    app.quit();
+  });
+}
 
 app.on("window-all-closed", () => {
   stopBackendServer();
