@@ -116,9 +116,24 @@ npm run electron-build:win:portable
 
 #### Build untuk Linux (AppImage + DEB)
 
-**Di Linux:**
+Build Linux harus dijalankan dari Linux native atau WSL2. Jangan memakai output Linux yang dibuat dari Windows jika backend memakai native dependency seperti `node-snap7`, karena binary native dan runtime Node.js harus cocok dengan Linux.
+
+**Cara recommended di Linux:**
+
+```bash
+chmod +x build-desktop-linux.sh
+./build-desktop-linux.sh
+```
+
+Pilih opsi `4. Build Both Linux Installers`.
+
+**Cara manual di Linux:**
+
 ```bash
 cd FE
+mkdir -p build-runtime
+cp "$(command -v node)" build-runtime/node
+chmod +x build-runtime/node
 npm run electron-build:linux
 ```
 
@@ -140,7 +155,7 @@ cd FE
 npm run electron-build -- --linux --publish=never
 ```
 
-**Catatan:** Cross-building dari Windows ke Linux memiliki keterbatasan, terutama untuk package `.deb`, native dependencies, dan permission file executable. Disarankan build Linux di Linux native atau WSL2.
+**Catatan:** Cross-building dari Windows ke Linux memiliki keterbatasan, terutama untuk package `.deb`, native dependencies, permission file executable, dan runtime backend. Disarankan build Linux di Linux native atau WSL2.
 
 #### Build untuk Semua Platform
 
