@@ -6,6 +6,10 @@ const net = require("net");
 
 let mainWindow;
 let backendProcess;
+let backendStatus = {
+  state: "starting",
+  message: "Service belum ready, please wait...",
+};
 
 const BACKEND_PORT =
   Number(process.env.BACKEND_PORT || 5000);
@@ -57,6 +61,20 @@ function writeLog(...args) {
   );
 
   console.log(...args);
+}
+
+function setBackendStatus(state, message) {
+  backendStatus = {
+    state,
+    message,
+  };
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(
+      "backend-status",
+      backendStatus
+    );
+  }
 }
 
 function getAppIcon() {
@@ -166,6 +184,11 @@ function getBackendRunner() {
 }
 
 async function startBackendServer() {
+  setBackendStatus(
+    "starting",
+    "Service belum ready, please wait..."
+  );
+
   const backendPath = getBackendPath();
   const backendRunner =
     getBackendRunner();
@@ -206,15 +229,28 @@ async function startBackendServer() {
 
   backendProcess.once("error", (err) => {
     writeLog("Backend process error:", err);
+    setBackendStatus(
+      "error",
+      "Service gagal start. Cek log aplikasi untuk detail."
+    );
   });
 
   backendProcess.once("exit", (code) => {
     if (code !== 0) {
       writeLog("Backend exited with code:", code);
+      setBackendStatus(
+        "error",
+        `Service berhenti dengan kode ${code}.`
+      );
     }
   });
 
   await waitForPort(BACKEND_PORT);
+
+  setBackendStatus(
+    "ready",
+    "Service ready"
+  );
 }
 
 function createWindow() {
@@ -299,14 +335,26 @@ function stopBackendServer() {
 }
 
 ipcMain.handle("get-backend-url", () => BACKEND_URL);
+ipcMain.handle("get-backend-status", () => backendStatus);
 
-app.whenReady().then(async () => {
+app.whenReady().then(() => {
   try {
     writeLog(`Starting MonitorPLC on ${process.platform}`);
-    await startBackendServer();
     createWindow();
     createApplicationMenu();
-    writeLog("Application started successfully");
+    writeLog("Application UI started successfully");
+
+    startBackendServer()
+      .then(() => {
+        writeLog("Backend service started successfully");
+      })
+      .catch((error) => {
+        writeLog("Failed to start backend:", error);
+        setBackendStatus(
+          "error",
+          "Service belum ready. Cek koneksi database atau log aplikasi."
+        );
+      });
   } catch (error) {
     writeLog("Failed to start app:", error);
 
